@@ -1,15 +1,40 @@
 const fs = require('fs');
 const path = require('path');
 
-
-function dirAndFile (dir, file) {
- 
-  if (!file)
-  file = [];
-  
-  let readFile = fs.readdirSync (dir)
-  console.log(readFile)
+function filePath(file) {
+  const encoding = "utf8";
+  try {
+    const text = fs.readFileSync(file, encoding);
+    return findLinks(text);
+  } catch (erro) {
+    handleError(erro);
+  } finally {
+    console.log('Completed Operation');
+  }
 }
+filePath(path.join(__dirname, '/src/text.md'))
 
-dirAndFile('/media/karol/Backup_Ubuntu/LABORATÓRIA/MD-LINKS/SAP007-md-links')
+function findLinks(text) {
+  const regex = /\[([^\]]*)\]\((https?:\/\/[^$#\s].[^\s]*)\)/gm;
+  const match = text.match(regex);
+      if (match) {
+        return match.map((str) => {
+          const arrLink = str.replace('[', '').split('](');
+          const strObject = {
+            text: arrLink[0],
+            link: arrLink[1],
+          };
+          console.log(strObject)
+          return strObject;
+        })
+        
+      } else {
+        return null;
+      }
+    }
+
+function handleError(erro) {
+  console.log(handleError)
+  throw new Error((erro.code, 'No files found'));
+}
 
